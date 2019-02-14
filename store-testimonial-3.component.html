@@ -1,0 +1,58 @@
+<div id="{{componentInfo.Name}}{{preview ? '-preview' : '-component'}}{{componentInfo.ComponentId != null ? componentInfo.ComponentId : ''}}" class="testimonial-wrapper"
+     [ngStyle]="{
+     'background': data?.BackgroundColor}"
+     [ngClass]="{'contrast': data.increaseContrast}">
+  <div class="image-overlay centered"
+       [ngStyle]="{
+        'background-image': 'url(' + (data?.backgroundImg ? (data?.backgroundImg | addDomain: 'cdnBase') : ('assets/images/transparentBackground.png' | addDomain)) + ')',
+        'opacity': (data.backgroundImgOpacity * 0.01)
+  }">
+  </div>
+  <div class="contrast-overlay" *ngIf="data.increaseContrast"></div>
+  <header class="testimonial-header" *ngIf="data.title || data.subHeader">
+    <h1 class="m24 m-b-2" *ngIf="data.title">{{data.title}}</h1>
+    <p class="r16 m-a-0" *ngIf="data.subHeader">{{data.subHeader}}</p>
+  </header>
+  <div class="slideshow-wrapper show-indicators"
+       #slideshowContainer
+       [style.height]="data.height + 'px'"
+       [ngClass]="{'fade-animation': data?.animationType == 'Fade',
+                   'slide-animation': data?.animationType == 'Slide'}">
+    <iui-carousel #carousel
+                  [interval]="0"
+                  [noWrap]="false"
+                  class="testimonial-carousel-trigger"
+                  (activeSlideChange)="slideUpdated($event)"
+                  [(activeSlide)]="slideIndex">
+      <iui-slide *ngFor="let slide of slides; let i = index;"
+                 [active]="slide.active">
+        <div class="carousel-caption container grid-container">
+          <div class="grid-x grid-margin-x">
+            <div class="cell flex-container align-center testimonial-box layout-3"
+                 id="testimonialBox{{componentInfo.ComponentId}}-{{componentInfo.LayoutId}}-{{i}}"
+                 *ngFor="let testimonial of slide.childs">
+              <mat-icon class="flex-child-shrink p-t-1">format_quote</mat-icon>
+              <div class="flex-container flex-dir-column m-l-2">
+                <p class="r16 m-b-2 text-justify">{{testimonial.quote}}</p>
+                <div class="flex-container align-right">
+                  <p class="r16 m-b-0 display-inline-block">{{testimonial.name}}</p>
+                  <span class="name-seperator" *ngIf="testimonial.name && testimonial.company">/</span>
+                  <a [href]="ensureLinkProtocol(testimonial.companyLink)"
+                     class="company-name r16"
+                     target="_blank"
+                     *ngIf="testimonial.company && testimonial.companyLink">
+                    {{testimonial.company}}
+                  </a>
+                  <p class="company-name r16 m-b-0 display-inline-block"
+                     *ngIf="testimonial.company && !testimonial.companyLink">
+                    {{testimonial.company}}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </iui-slide>
+    </iui-carousel>
+  </div>
+</div>

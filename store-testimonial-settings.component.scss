@@ -1,0 +1,42 @@
+@import "settings/variables";
+@import "settings/colors";
+@import "foundation/settings/settings";
+
+.image-preview-wrap {
+  padding: .25rem;
+}
+
+.no-image-background {
+  background: $grey-lighten-4;
+  padding: 1rem;
+  text-align: center;
+}
+
+#backgroundImageOpacity {
+  align-items: center;
+  background: $text-white-primary;
+  border-radius: 2px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, .24), 0 0 2px 0 rgba(0, 0, 0, .12);
+  color: $black;
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  font-weight: 500;
+  height: 36px;
+  justify-content: space-between;
+  margin-top: .5rem;
+  min-width: 230px;
+  padding: 8px 35px 10px 8px;
+  position: relative;
+  text-transform: none;
+  width: 100%;
+
+  i {
+    position: absolute;
+    right: 9px;
+  }
+}
+
+.mat-form-field {
+  font-weight: 500;
+}

@@ -1,0 +1,64 @@
+<div id="{{componentInfo.Name}}{{preview ? '-preview' : '-component'}}{{componentInfo.ComponentId != null ? componentInfo.ComponentId : ''}}" class="testimonial-wrapper"
+     [ngStyle]="{
+     'background': data?.BackgroundColor}"
+     [ngClass]="{'contrast': data.increaseContrast}">
+  <div class="image-overlay centered"
+       [ngStyle]="{
+        'background-image': 'url(' + (data?.backgroundImg ? (data?.backgroundImg | addDomain: 'cdnBase') : ('assets/images/transparentBackground.png' | addDomain)) + ')',
+        'opacity': (data.backgroundImgOpacity * 0.01)
+  }">
+  </div>
+  <div class="contrast-overlay" *ngIf="data.increaseContrast"></div>
+  <header class="testimonial-header" *ngIf="data.title || data.subHeader">
+    <h1 class="m24 m-b-2" *ngIf="data.title">{{data.title}}</h1>
+    <p class="r16" *ngIf="data.subHeader">{{data.subHeader}}</p>
+  </header>
+  <div class="slideshow-wrapper show-indicators"
+       #slideshowContainer
+       [style.height]="data.height + 'px'"
+       [ngClass]="{'fade-animation': data?.animationType == 'Fade',
+                   'slide-animation': data?.animationType == 'Slide'}">
+    <iui-carousel #carousel
+                  [interval]="0"
+                  [noWrap]="false"
+                  class="testimonial-carousel-trigger"
+                  (activeSlideChange)="slideUpdated($event)"
+                  [(activeSlide)]="slideIndex">
+      <iui-slide *ngFor="let slide of slides; let i = index;"
+                 [active]="slide.active">
+        <div class="carousel-caption container grid-container">
+          <div class="grid-x grid-margin-x align-center small-up-1 medium-up-{{data?.columns > 1 ? '2' : '1'}} large-up-{{data?.columns}}">
+            <div class="cell r16 testimonial-box--layout2"
+                 id="testimonialBox{{componentInfo.ComponentId}}-{{componentInfo.LayoutId}}-{{i}}"
+                 *ngFor="let testimonial of slide.childs">
+              <div class="flex-container align-stretch flex-dir-column">
+                <div class="testimonial-box__header">
+                  <div class="testimonial-box__header--col col-30 m-r-2">
+                    <img [src]="testimonial?.imageSrc ? (testimonial?.imageSrc | addDomain: 'cdnBase') : ('assets/images/profile-icon-google.svg' | addDomain: 'systemBase')"
+                         alt="" class="testimonial-img testimonial-img--2">
+                  </div>
+                  <div class="testimonial-box__header--col col-70">
+                    <p class="m16 text-grey-primary">{{testimonial.name}}</p>
+                    <a [href]="ensureLinkProtocol(testimonial.companyLink)"
+                       class="company-name"
+                       target="_blank"
+                       *ngIf="testimonial.company && testimonial.companyLink">
+                      {{testimonial.company}}
+                    </a>
+                    <p class="company-name m-b-0"
+                       *ngIf="testimonial.company && !testimonial.companyLink">
+                      {{testimonial.company}}
+                    </p>
+                  </div>
+                </div>
+                <div class="quote-wrap--layout2 p-x-3 p-y-4">
+                  <p class="text-grey-secondary testimonial-quote word-break" *ngIf="testimonial.quote">{{testimonial.quote}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </iui-slide>
+    </iui-carousel>
+  </div>
+</div>

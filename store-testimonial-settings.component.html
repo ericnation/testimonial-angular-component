@@ -1,0 +1,279 @@
+<div id="testimonialsComponentSettingsWrapper">
+  <section class="sidebar_panel-control-section">
+    <h6 class="panel-control-section__title">{{'component_settings.layout' | translate}}</h6>
+    <component-layout-select id="fundraiserCountdownLayoutSelect"
+                             [componentDef]="componentDef"
+                             [componentInfo]="componentInfo"
+                             (selectedTemplateChanged)="selectedTemplateChanged($event)">
+    </component-layout-select>
+    <mat-form-field class="full-width" *ngIf="componentInfo.LayoutId === 1 || componentInfo.LayoutId === 2">
+      <mat-select id="testimonialsColumns"
+                  class="settings-panel-select"
+                  name="animationTypeSlider"
+                  [(ngModel)]="data.columns"
+                  (selectionChange)="updateColumns()"
+                  #testimonialsColumns="ngModel">
+        <mat-select-trigger>
+          {{data.columns === 1 ? ('component_settings.1_column' | translate) : ('component_settings.x_columns' | translate: {x: data.columns})}}
+        </mat-select-trigger>
+        <mat-option [value]="1">{{'component_settings.1_column' | translate}}</mat-option>
+        <mat-option [value]="2">{{'component_settings.x_columns' | translate:{x: 2} }}</mat-option>
+        <mat-option [value]="3">{{'component_settings.x_columns' | translate:{x: 3} }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+  </section>
+  <!-- BACKGROUND COLOR -->
+  <section class="sidebar_panel-control-section">
+    <h6 class="panel-control-section__title">
+      {{'common.colors' | translate}}
+    </h6>
+    <iui-color-picker-dropdown id="slideshowColorPicker"
+                               [(color)]="data.BackgroundColor"
+                               (colorChange)="editTextColor(data.BackgroundColor)"
+                               [colorGroups]="colorGroups"
+                               [placeholder]="'admin.background_color' | translate"
+                               (menuClosed)="colorInUseChanged(data.BackgroundColor)">
+    </iui-color-picker-dropdown>
+  </section>
+  <section class="sidebar_panel-control-section">
+    <h6 class="panel-control-section__title">
+      {{'common.options' | translate}}
+    </h6>
+
+    <div class="form-group">
+      <label for="testimonialsHeading">{{'store_settings.product_heading' | translate}}</label>
+      <mat-form-field class="full-width">
+        <input id="testimonialsHeading" name="testimonialsHeading" matInput type="text" [(ngModel)]="data.title">
+      </mat-form-field>
+    </div>
+
+
+    <div class="form-group">
+      <label for="testimonialsSubHeading">{{'store_settings.product_sub_heading' | translate}}</label>
+      <mat-form-field class="full-width">
+        <input id="testimonialsSubHeading" name="testimonialsSubHeading" matInput type="text" [(ngModel)]="data.subHeader">
+      </mat-form-field>
+    </div>
+
+    <div class="form-group flex-container align-justify m-b-2">
+      <label for="testimonialsIncreaseContrast">{{'component_settings.increase_contrast' | translate}}</label>
+      <mat-slide-toggle
+        id="testimonialsIncreaseContrast"
+        name="testimonialsIncreaseContrast"
+        [(ngModel)]="data.increaseContrast">
+      </mat-slide-toggle>
+    </div>
+    <label *ngIf="!imageIsUploading" class="m-b-1">{{'component_settings.background_image' | translate}}</label>
+    <div class="image-preview-container z-depth-1">
+      <iui-alert-panel [messages]="messages"></iui-alert-panel>
+      <form id="fundraiserUploadImageForm"
+            name="fundraiserUploadImageForm"
+            novalidate
+            #fundraiserUploadImageForm="ngForm">
+        <input type="file"
+               name="slideImage"
+               (change)="uploadImage($event.srcElement? $event.srcElement.files : $event.target.files)"
+               #fundraiserImageUploadButton
+               [hidden]="true"/>
+        <div class="image-preview-container" *ngIf="data.backgroundImg && !imageIsUploading">
+          <div class="image-preview-wrap flex-container align-center-middle">
+            <img [src]="data.backgroundImg | addDomain: 'cdnBase'" class="fundraiser-image">
+          </div>
+          <div class="image-preview-footer">
+            <button mat-button
+                    type="button"
+                    id="deleteFundraiserImageButton"
+                    color="primary"
+                    class="button-block p-y-1"
+                    (click)="deleteImage()">
+              {{'component_settings.remove' | translate}}
+            </button>
+          </div>
+        </div>
+        <div class="image-preview-container position-relative z-depth-1"  *ngIf="!data.backgroundImg">
+          <div class="spinner-container" *ngIf="!data.backgroundImg && imageIsUploading">
+            <mat-spinner [diameter]="36" [strokeWidth]="3"></mat-spinner>
+          </div>
+
+          <div class="image-preview-wrap">
+            <div class="no-image-background">
+              <p class="m-b-1 p-t-4 m14">{{'component_settings.no_image' | translate}}</p>
+              <p class="r13 text-grey-secondary m-b-3" [innerHTML]="'component_settings.recommended_size_image' | translate: {x: '3000', y: '1000'}"></p>
+            </div>
+          </div>
+          <div class="image-preview-footer">
+            <button mat-button
+                    type="button"
+                    id="uploadFundraiserImageButton"
+                    color="primary"
+                    class="button-block p-y-1"
+                    (click)="fundraiserImageUploadButton.click()">
+              {{'component_settings.upload' | translate}}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <mat-menu #backgroundImageOpacityMenu="matMenu" [overlapTrigger]="false" class="opacity-dropdown-menu">
+      <div class="custom-select-menu">
+        <div class="color-picker-wrap" (click)="$event.stopPropagation()">
+          <div class="opacity-controls-wrap m-b-1">
+            <mat-slider class="opacity-slider"
+                        [min]="sliderProperties.min"
+                        [max]="sliderProperties.max"
+                        [value]="data.backgroundImgOpacity"
+                        step="1"
+                        (change)="slideOpacityChange($event)">
+            </mat-slider>
+            <input (keyup.enter)="setOpacityFromInput()"
+                   (blur)="setOpacityFromInput()"
+                   onlyNumber="true"
+                   class="opacity-input m-r-1"
+                   id="opacityInput"
+                   name="opacityInput"
+                   type="text"
+                   [(ngModel)]="data.backgroundImgOpacity">
+          </div>
+          <div class="slider-label-wrap p-x-0">
+            <span class="slider-label">{{sliderProperties.min}}</span>
+            <span class="slider-label">{{sliderProperties.max}}</span>
+          </div>
+        </div>
+        <button mat-button
+                type="button"
+                color="primary"
+                class="button-block"
+                (click)="closeBackgroundImageOpacityDropdown($event)">
+          {{'common.done' | translate}}
+        </button>
+      </div>
+    </mat-menu>
+    <button [mat-menu-trigger-for]="backgroundImageOpacityMenu"
+            id="backgroundImageOpacity"
+            *ngIf="data.backgroundImg && !imageIsUploading">
+      {{'admin.image_opacity' | translate}}
+      <span class="selected-option">{{data.backgroundImgOpacity}}%</span>
+      <i class="material-icons arrow-drop-down">arrow_drop_down</i>
+    </button>
+
+  </section>
+
+  <section class="sidebar_panel-control-section">
+    <h6 class="panel-control-section__title">
+      {{'component_settings.testimonials' | translate}}
+    </h6>
+    <mat-accordion class="select-button-expansion">
+      <div class="testimonials-wrapper" [dragula]="'testimonials'" [dragulaModel]="data?.testimonials">
+        <mat-expansion-panel class="m-b-2"
+                             (opened)="testimonialPanelOpened(i)"
+                             #testimonialShowMatExpansionPanel
+                             *ngFor="let testimonial of data.testimonials; let i = index"
+                             id="testiMonialShowExpansionPanel-{{i}}">
+          <mat-expansion-panel-header class="flex-container align-middle" [expandedHeight]="'36px'" [collapsedHeight]="'36px'">
+            <mat-panel-title>
+              <mat-icon class="move-iconn text-grey-secondary r16 m-r-2">open_with</mat-icon><span class="r14 font-bold mat-expansion-title">{{'component_settings.testimonial' | translate}}</span>
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="settings-content-wrap logo-upload-wrap position-relative m-b-2" *ngIf="componentInfo.LayoutId !== 3">
+            <iui-alert-panel [messages]="messages"></iui-alert-panel>
+            <form id="testimonial{{i}}UploadImageForm"
+                  name="testimonial{{i}}UploadImageForm"
+                  novalidate
+                  #testimonialUploadImageForm="ngForm">
+              <input type="file" name="testimonialImage" (change)="uploadTestimonialImage($event.srcElement? $event.srcElement.files : $event.target.files)" #testimonialImageUploadButton
+                     [hidden]="true"/>
+              <div class="spinner-container" *ngIf="testimonialImageUploading">
+                <mat-spinner [diameter]="36" [strokeWidth]="3"></mat-spinner>
+              </div>
+              <div class="image-preview-container" *ngIf="testimonial.imageSrc && !testimonialImageUploading">
+                <div class="image-preview-wrap">
+                  <img [src]="testimonial.imageSrc | addDomain: 'cdnBase'" class="testimonial-image">
+                </div>
+                <div class="image-preview-footer">
+                  <button id="deleteTestimonial{{i}}ImageButton"
+                          type="button"
+                          mat-button
+                          color="primary"
+                          class="button-block p-y-1"
+                          (click)="deleteTestimonialImage(testimonial); testimonialImageUploadButton.value = null">
+                    {{'component_settings.remove' | translate}}
+                  </button>
+                </div>
+              </div>
+              <div class="image-preview-container z-depth-1" *ngIf="!testimonial.imageSrc || testimonialImageUploading">
+                <div class="image-preview-wrap">
+                  <div class="no-image-background">
+                    <p class="m14">{{'component_settings.no_image' | translate}}</p>
+                    <p class="r13 text-grey-secondary m-b-3 p-t-4"
+                       [innerHTML]="'component_settings.recommended_size_image' | translate: {x: '200', y: '200'}"></p>
+                  </div>
+                </div>
+                <div class="image-preview-footer">
+                  <button id="uploadTestimonial{{i}}ImageButton"
+                          type="button" mat-button color="primary" class="button-block p-y-1"
+                          (click)="imageUploadTestimonial = testimonial; testimonialImageUploadButton.click()">
+                    {{'component_settings.upload' | translate}}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="form-group">
+            <label for="testimonial{{i}}Name">{{'common.name' | translate}}</label>
+            <mat-form-field class="full-width">
+              <input type="text" name="testimonial{{i}}Name" id="testimonial{{i}}Name"
+                     matInput [(ngModel)]="testimonial.name">
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <label for="testimonial{{i}}Company">{{'component_settings.company' | translate}}</label>
+            <mat-form-field class="full-width">
+              <input type="text" name="testimonial{{i}}Company" id="testimonial{{i}}Company"
+                     matInput [(ngModel)]="testimonial.company">
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <label for="testimonial{{i}}CompanyLink">{{'component_settings.company_link' | translate}}</label>
+            <mat-form-field class="full-width">
+              <input type="text" name="testimonial{{i}}CompanyLink" id="testimonial{{i}}CompanyLink"
+                     matInput [(ngModel)]="testimonial.companyLink">
+            </mat-form-field>
+          </div>
+          <div class="form-group">
+            <label for="testimonial{{i}}Quote">{{'component_settings.quote' | translate}}</label>
+            <mat-form-field class="full-width textarea">
+              <textarea matInput
+                        id="testimonial{{i}}Quote"
+                        name="testimonial{{i}}Quote"
+                        matTextareaAutosize
+                        maxlength="255"
+                        [(ngModel)]="testimonial.quote">
+              </textarea>
+            </mat-form-field>
+            <span class="r12 quote-counter text-grey-secondary full-width text-right display-block"
+                  [ngClass]="{'text-danger': testimonial.quote.length > 200}">
+              {{testimonial.quote.length}}
+            </span>
+          </div>
+          <button id="deleteTestimonial{{i}}Button"
+                  mat-button
+                  color="warn"
+                  type="button"
+                  (click)="deleteTestimonial(i)"
+                  class="button-block m-x-0">
+            {{'component_settings.delete_testimonial' | translate}}
+          </button>
+        </mat-expansion-panel>
+      </div>
+
+    </mat-accordion>
+    <button id="addTestimonialButton" mat-button color="primary" type="button" (click)="addTestimonial()" class="button-block">
+      <i class="material-icons">playlist_add</i> {{'component_settings.add_testimonial' | translate}}
+    </button>
+  </section>
+</div>

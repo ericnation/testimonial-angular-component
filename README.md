@@ -1,1 +1,3 @@
-# testimonial-angular-component
+# Testimonial Angular Component
+
+This testimonial component was part of an UI Component library I helped build during my time at InkSoft. A customer could add this component to their home page if they so desired. The component was fully customizable and the user had 4 layout options to choose from. Some of the customizable settings included selecting a background color, a background image, title, subheading, testimonial, name, etc. This component was fun to build and some what challenging to adjust the columns based on responsiveness.
